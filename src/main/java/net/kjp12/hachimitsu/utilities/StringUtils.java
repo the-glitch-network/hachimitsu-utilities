@@ -9,9 +9,21 @@ import java.util.concurrent.TimeUnit;
  * @since 0.0.0
  **/
 public final class StringUtils {
+    static final char[]
+            ARRAY_DEFAULT_DELIMITERS = {' ', '\t', '\n', 0, '\f', '\r', 0, 0},
+            ARRAY_QUOTES = {'`', '’', '"', 0, 0, '”', 0, '\''},
+            ARRAY_QUOTE_PAIRED = {'\uFFFF', 0, '｢', 0, 0, 0, 0, 0, 0, 0, 0, 0, '「', 0, '『', 0, 0, 0, 0, 0, 0, 0, 0, 0, '‘', 0, 0, 0, '“', 0, 0, 0};
     public static final String DEFAULT_DELIMITERS = " \t\n\r\f", QUOTES = "\"'`”’", QUOTE_PAIRED = "“‘「『｢";
 
     private StringUtils() {
+    }
+
+    public static int seekToDelimiter(final String toSplit, final char[] delimiters, final int lim, int ib) {
+        final int mask = delimiters.length - 1;
+        char c;
+        while (ib < lim && delimiters[(c = toSplit.charAt(ib)) & mask] != c)
+            ib++;
+        return ib;
     }
 
     public static int seekToDelimiter(final String toSplit, final String delimiters, final int lim, int ib) {
@@ -20,8 +32,24 @@ public final class StringUtils {
         return ib;
     }
 
+    public static int seekToNonDelimiter(final String toSplit, final char[] delimiters, final int lim, int ib) {
+        final int mask = delimiters.length - 1;
+        char c;
+        while (ib < lim && delimiters[(c = toSplit.charAt(ib)) & mask] == c)
+            ib++;
+        return ib;
+    }
+
     public static int seekToNonDelimiter(final String toSplit, final String delimiters, final int lim, int ib) {
         while (ib < lim && delimiters.indexOf(toSplit.charAt(ib)) != -1)
+            ib++;
+        return ib;
+    }
+
+    public static int seekToEndQuote(final String toSplit, final char[] delimiters, final char quote, final int lim, int ib) {
+        final int mask = delimiters.length - 1;
+        char c;
+        while (ib < lim && (toSplit.charAt(ib) != quote || (ib + 1 < lim && delimiters[(c = toSplit.charAt(ib + 1)) & mask] != c)))
             ib++;
         return ib;
     }
@@ -108,14 +136,25 @@ public final class StringUtils {
     }
 
     public static TimeUnit getTimeUnit(char unit) {
-        return switch (unit) {
-            case 'D', 'd' -> TimeUnit.DAYS;
-            case 'H', 'h' -> TimeUnit.HOURS;
-            case 'M', 'm' -> TimeUnit.MINUTES;
-            case 'S', 's' -> TimeUnit.SECONDS;
-            case 'N', 'n' -> TimeUnit.NANOSECONDS;
-            default -> TimeUnit.MILLISECONDS;
-        };
+        switch (unit) {
+            case 'D':
+            case 'd':
+                return TimeUnit.DAYS;
+            case 'H':
+            case 'h':
+                return TimeUnit.HOURS;
+            case 'M':
+            case 'm':
+                return TimeUnit.MINUTES;
+            case 'S':
+            case 's':
+                return TimeUnit.SECONDS;
+            case 'N':
+            case 'n':
+                return TimeUnit.NANOSECONDS;
+            default:
+                return TimeUnit.MILLISECONDS;
+        }
     }
 
     public static long parseDuration(String str) {
@@ -134,5 +173,44 @@ public final class StringUtils {
             }
         }
         return t;
+    }
+
+    /**
+     * Creates a hash char array for use with the char array versions of the seek methods.
+     *
+     * @param in The input string to create the hash char array.
+     * @return The hash char array.
+     */
+    public static char[] createCharHashArray(String in) {
+        // Short-circuit for pre-made hash arrays.
+        switch (in) {
+            case DEFAULT_DELIMITERS:
+                return ARRAY_DEFAULT_DELIMITERS.clone();
+            case QUOTES:
+                return ARRAY_QUOTES.clone();
+            case QUOTE_PAIRED:
+                return ARRAY_QUOTE_PAIRED.clone();
+        }
+        int len = Integer.highestOneBit(in.length());
+        if (len != in.length()) len <<= 1;
+        int m = len - 1;
+        var out = new char[len];
+        out[0] = '\uFFFF';
+        for (int i = 0, il = in.length(); i < il; i++) {
+            var c = in.charAt(i);
+            int f = c & m;
+            while (out[f] != (f == 0 ? '\uFFFF' : 0) && out[f] != c) {
+                f = c & (m = (len <<= 1) - 1);
+                var arr = out;
+                out = new char[len];
+                out[0] = '\uFFFF';
+                if (arr[0] != '\uFFFF') out[arr[0] & m] = arr[0];
+                for (int b = 1, bl = arr.length; b < bl; b++) {
+                    if (arr[b] != 0) out[arr[b] & m] = arr[b];
+                }
+            }
+            out[f] = c;
+        }
+        return out;
     }
 }

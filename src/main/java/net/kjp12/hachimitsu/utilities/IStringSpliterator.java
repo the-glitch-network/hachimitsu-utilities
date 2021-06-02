@@ -38,7 +38,6 @@ public interface IStringSpliterator {
 
     void backtrack();
 
-    @Contract(pure = true)
     boolean hasNext();
 
     void next();

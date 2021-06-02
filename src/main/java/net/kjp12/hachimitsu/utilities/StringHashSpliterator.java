@@ -4,39 +4,45 @@ import org.jetbrains.annotations.Contract;
 
 import static net.kjp12.hachimitsu.utilities.StringUtils.*;
 
-public final class StringSpliterator implements IStringSpliterator {
+public final class StringHashSpliterator implements IStringSpliterator {
     private final boolean respectQuotes;
-    private final String delimiters;
+    private final char[] delimiters;
     private final String toSplit;
     private String cache;
-    private StringBuilder anchor;
-    private int ib, ia, ib$q, ai;
+    private int ib, ia, ib$q;
 
-    public StringSpliterator(String toSplit) {
-        this(toSplit, DEFAULT_DELIMITERS, true);
+    public StringHashSpliterator(String toSplit) {
+        this(toSplit, ARRAY_DEFAULT_DELIMITERS, true);
     }
 
-    public StringSpliterator(String toSplit, String delimiters) {
+    public StringHashSpliterator(String toSplit, String delimiters) {
         this(toSplit, delimiters, true);
     }
 
-    public StringSpliterator(String toSplit, boolean respectQuotes) {
-        this(toSplit, DEFAULT_DELIMITERS, respectQuotes);
+    public StringHashSpliterator(String toSplit, boolean respectQuotes) {
+        this(toSplit, ARRAY_DEFAULT_DELIMITERS, respectQuotes);
     }
 
-    public StringSpliterator(String toSplit, String delimiters, boolean respectQuotes) {
+    public StringHashSpliterator(String toSplit, String delimiters, boolean respectQuotes) {
+        this(toSplit, createCharHashArray(delimiters), respectQuotes);
+    }
+
+    public StringHashSpliterator(String toSplit, char[] delimiters, boolean respectQuotes) {
         this.toSplit = toSplit;
         this.delimiters = delimiters;
         this.respectQuotes = respectQuotes;
     }
 
     public boolean hasNext() {
-        seekToNonDelimiter();
         return ib < toSplit.length();
     }
 
     public void seekToNonDelimiter() {
         ib = StringUtils.seekToNonDelimiter(toSplit, delimiters, toSplit.length(), ib);
+    }
+
+    public void seekToDelimiter(char[] delimiters) {
+        ib = StringUtils.seekToDelimiter(toSplit, delimiters, toSplit.length(), ib);
     }
 
     public void seekToDelimiter() {
@@ -59,12 +65,12 @@ public final class StringSpliterator implements IStringSpliterator {
             ia = ib;
             if (respectQuotes) {
                 final char c = toSplit.charAt(ib);
-                if (QUOTES.indexOf(c) != -1) {
+                if (ARRAY_QUOTES[c & ARRAY_QUOTES.length] == c) {
                     ia++;
                     ib++;
                     seekToEndQuote(c);
                     ib$q = ib++;
-                } else if (QUOTE_PAIRED.indexOf(c) != -1) {
+                } else if (ARRAY_QUOTE_PAIRED[c & ARRAY_QUOTE_PAIRED.length] == c) {
                     ia++;
                     ib++;
                     seekToEndQuote((char) (c + 1));
@@ -127,12 +133,6 @@ public final class StringSpliterator implements IStringSpliterator {
     public boolean contentEquals(String str, boolean ignoreCase) {
         int i = Math.min(ia, ib), l = ib$q - i;
         return str.length() == l && toSplit.regionMatches(ignoreCase, i, str, 0, l);
-    }
-
-    @Contract(pure = true)
-    public boolean regionMatches(boolean ignoreCase, int to, String str, int so, int sl) {
-        int i = Math.min(ia, ib), l = ib$q - i;
-        return l == sl && sl <= str.length() && toSplit.regionMatches(ignoreCase, i + to, str, so, sl);
     }
 
     @Contract(pure = true)
@@ -203,35 +203,5 @@ public final class StringSpliterator implements IStringSpliterator {
     public String rest() {
         seekToNonDelimiter();
         return toSplit.substring(ib);
-    }
-
-    @Override
-    public String toString() {
-        return "StringSpliterator{" +
-                "respectQuotes=" + respectQuotes +
-                ", delimiters='" + delimiters + '\'' +
-                ", toSplit='" + toSplit + '\'' +
-                ", cache='" + cache + '\'' +
-                ", ib=" + ib +
-                ", ia=" + ia +
-                ", ib$q=" + ib$q +
-                '}';
-    }
-
-    public void anchor(int buf) {
-        ai = Math.min(ia, ib);
-        anchor = new StringBuilder(ai + buf).append(toSplit, 0, ai);
-    }
-
-    public boolean tryTestAnchor(String str) {
-        if (regionMatches(true, 0, str, 0, currentLength())) {
-            anchor.replace(ai, anchor.length(), str);
-            return true;
-        }
-        return false;
-    }
-
-    public String getAnchor() {
-        return anchor.toString();
     }
 }

@@ -10,8 +10,8 @@ group = "net.kjp12.hachimitsu"
 version = "0.0.0"
 
 configure<JavaPluginConvention> {
-    sourceCompatibility = JavaVersion.VERSION_14
-    targetCompatibility = JavaVersion.VERSION_14
+    sourceCompatibility = JavaVersion.VERSION_11
+    targetCompatibility = JavaVersion.VERSION_11
 }
 
 repositories {
