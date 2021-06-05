@@ -10,7 +10,7 @@ public final class StringSpliterator implements IStringSpliterator {
     private final String toSplit;
     private String cache;
     private StringBuilder anchor;
-    private int ib, ia, ib$q, ai;
+    private int ib, ia, ib$q, il, ai;
 
     public StringSpliterator(String toSplit) {
         this(toSplit, DEFAULT_DELIMITERS, true);
@@ -28,11 +28,12 @@ public final class StringSpliterator implements IStringSpliterator {
         this.toSplit = toSplit;
         this.delimiters = delimiters;
         this.respectQuotes = respectQuotes;
+        il = toSplit.length();
     }
 
     public boolean hasNext() {
         seekToNonDelimiter();
-        return ib < toSplit.length();
+        return ib < il;
     }
 
     public void seekToNonDelimiter() {
@@ -54,8 +55,7 @@ public final class StringSpliterator implements IStringSpliterator {
             final int i = ia;
             ia = ib;
             ib = i;
-        } else {
-            seekToNonDelimiter();
+        } else if (hasNext()) {
             ia = ib;
             if (respectQuotes) {
                 final char c = toSplit.charAt(ib);
@@ -219,12 +219,21 @@ public final class StringSpliterator implements IStringSpliterator {
     }
 
     public void anchor(int buf) {
-        ai = Math.min(ia, ib);
-        anchor = new StringBuilder(ai + buf).append(toSplit, 0, ai);
+        if (hasNext()) {
+            ai = Math.min(ia, ib);
+            anchor = new StringBuilder(ai + buf).append(toSplit, 0, ai);
+        } else {
+            ai = ib;
+            anchor = new StringBuilder(ai + buf).append(toSplit);
+            if (ai != 0 && delimiters.indexOf(toSplit.charAt(ai - 1)) == -1) {
+                anchor.append(' ');
+                ai++;
+            }
+        }
     }
 
     public boolean tryTestAnchor(String str) {
-        if (regionMatches(true, 0, str, 0, currentLength())) {
+        if (ai >= ib || regionMatches(true, 0, str, 0, currentLength())) {
             anchor.replace(ai, anchor.length(), str);
             return true;
         }
