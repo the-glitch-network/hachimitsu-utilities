@@ -2,6 +2,8 @@ package net.kjp12.hachimitsu.utilities;
 
 import org.jetbrains.annotations.Contract;
 
+import java.util.UUID;
+
 import static net.kjp12.hachimitsu.utilities.StringUtils.*;
 
 public final class StringSpliterator implements IStringSpliterator {
@@ -33,6 +35,11 @@ public final class StringSpliterator implements IStringSpliterator {
 
     public boolean hasNext() {
         seekToNonDelimiter();
+        return ib < il;
+    }
+
+    /* Doesn't fast forward, leaving the space intact. */
+    public boolean hasPotential() {
         return ib < il;
     }
 
@@ -220,6 +227,7 @@ public final class StringSpliterator implements IStringSpliterator {
 
     public void anchor(int buf) {
         if (hasNext()) {
+            next();
             ai = Math.min(ia, ib);
             anchor = new StringBuilder(ai + buf).append(toSplit, 0, ai);
         } else {
@@ -242,5 +250,26 @@ public final class StringSpliterator implements IStringSpliterator {
 
     public String getAnchor() {
         return anchor.toString();
+    }
+
+    public boolean isUUID() { // 8 4 4 4 12
+        var i = Math.min(ia, ib);
+        return ib$q - i == 36 &&
+                toSplit.charAt(i + 8) == '-' &&
+                toSplit.charAt(i + 13) == '-' &&
+                toSplit.charAt(i + 18) == '-' &&
+                toSplit.charAt(i + 23) == '-' &&
+                StringUtils.equals(toSplit, ARRAY_HEX_DIGITS, i + 8, i) &&
+                StringUtils.equals(toSplit, ARRAY_HEX_DIGITS, i + 13, i + 9) &&
+                StringUtils.equals(toSplit, ARRAY_HEX_DIGITS, i + 18, i + 14) &&
+                StringUtils.equals(toSplit, ARRAY_HEX_DIGITS, i + 23, i + 19) &&
+                StringUtils.equals(toSplit, ARRAY_HEX_DIGITS, i + 36, i + 24);
+    }
+
+    public UUID currentUUID() {
+        var i = Math.min(ia, ib);
+        long major = (parseLong(toSplit, i, i + 8, 0, 16) << 32) | (parseLong(toSplit, i + 9, i + 13, 0, 16) << 16) | (parseLong(toSplit, i + 14, i + 18, 0, 16));
+        long minor = (parseLong(toSplit, i + 19, i + 23, 0, 16) << 48) | (parseLong(toSplit, i + 24, i + 36, 0, 16));
+        return new UUID(major, minor);
     }
 }

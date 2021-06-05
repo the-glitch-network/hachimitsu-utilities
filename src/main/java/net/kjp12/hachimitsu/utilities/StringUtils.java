@@ -12,10 +12,20 @@ public final class StringUtils {
     static final char[]
             ARRAY_DEFAULT_DELIMITERS = {' ', '\t', '\n', 0, '\f', '\r', 0, 0},
             ARRAY_QUOTES = {'`', '’', '"', 0, 0, '”', 0, '\''},
-            ARRAY_QUOTE_PAIRED = {'\uFFFF', 0, '｢', 0, 0, 0, 0, 0, 0, 0, 0, 0, '「', 0, '『', 0, 0, 0, 0, 0, 0, 0, 0, 0, '‘', 0, 0, 0, '“', 0, 0, 0};
+            ARRAY_QUOTE_PAIRED = {'\uFFFF', 0, '｢', 0, 0, 0, 0, 0, 0, 0, 0, 0, '「', 0, '『', 0, 0, 0, 0, 0, 0, 0, 0, 0, '‘', 0, 0, 0, '“', 0, 0, 0},
+            ARRAY_HEX_DIGITS = {'\uffff', 'A', 'B', 'C', 'D', 'E', 'F', 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 'a', 'b', 'c', 'd', 'e', 'f', 0, 0, 0, 0, 0, 0, 0, 0, 0, '0', '1', '2', '3', '4', '5', '6', '7', '8', '9', 0, 0, 0, 0, 0, 0};
     public static final String DEFAULT_DELIMITERS = " \t\n\r\f", QUOTES = "\"'`”’", QUOTE_PAIRED = "“‘「『｢";
 
     private StringUtils() {
+    }
+
+    public static boolean equals(final String toSplit, final char[] delimiters, final int lim, int ib) {
+        final int mask = delimiters.length - 1;
+        char c;
+        while (ib < lim) {
+            if (delimiters[(c = toSplit.charAt(ib++)) & mask] != c) return false;
+        }
+        return true;
     }
 
     public static int seekToDelimiter(final String toSplit, final char[] delimiters, final int lim, int ib) {
