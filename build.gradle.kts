@@ -9,9 +9,10 @@ val jetbrains_version: String by project
 group = "net.kjp12.hachimitsu"
 version = "0.0.0"
 
-configure<JavaPluginConvention> {
+java {
     sourceCompatibility = JavaVersion.VERSION_11
     targetCompatibility = JavaVersion.VERSION_11
+    modularity.inferModulePath.set(true)
 }
 
 repositories {
@@ -23,10 +24,6 @@ dependencies {
     testRuntimeOnly("org.junit.jupiter", "junit-jupiter-engine", jupiter_version)
 
     testCompileOnly(compileOnly("org.jetbrains", "annotations", jetbrains_version))
-}
-
-java {
-    modularity.inferModulePath.set(true)
 }
 
 tasks {
