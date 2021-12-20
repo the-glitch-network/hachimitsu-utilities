@@ -15,6 +15,10 @@ public interface IStringSpliterator {
         return new StringSpliterator(str);
     }
 
+    static IStringSpliterator of(byte[] str) {
+        return new ByteStringSpliterator(str);
+    }
+
     @Contract(pure = true)
     boolean contentEquals(String str);
 

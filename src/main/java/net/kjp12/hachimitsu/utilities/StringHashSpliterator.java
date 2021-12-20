@@ -110,7 +110,7 @@ public final class StringHashSpliterator implements IStringSpliterator {
     @Contract(pure = true)
     public boolean startsWith(String str, boolean ignoreCase) {
         int i = Math.min(ia, ib), l = ib$q - i;
-        return str.length() <= l && str.regionMatches(ignoreCase, i, str, 0, str.length());
+        return str.length() <= l && toSplit.regionMatches(ignoreCase, i, str, 0, str.length());
     }
 
     @Override
@@ -126,7 +126,7 @@ public final class StringHashSpliterator implements IStringSpliterator {
     @Contract(pure = true)
     public boolean contentEquals(String str) {
         int i = Math.min(ia, ib), l = ib$q - i;
-        return str.length() == l && str.regionMatches(i, str, 0, l);
+        return str.length() == l && toSplit.regionMatches(i, str, 0, l);
     }
 
     @Contract(pure = true)
@@ -159,7 +159,7 @@ public final class StringHashSpliterator implements IStringSpliterator {
     @Contract(pure = true)
     public int currentInt() throws NumberFormatException {
         var i = currentInt(0, 10);
-        if (i != 0 || toSplit.indexOf(ia) == '0') return i;
+        if (i != 0 || toSplit.charAt(ia) == '0') return i;
         throw new NumberFormatException("For input string " + toSplit + " @ [" + ia + ", " + ib$q + "] (effectively " + current() + ')');
     }
 
@@ -171,7 +171,7 @@ public final class StringHashSpliterator implements IStringSpliterator {
     @Contract(pure = true)
     public long currentLong() throws NumberFormatException {
         var i = currentLong(0L, 10);
-        if (i != 0 || toSplit.indexOf(ia) == '0') return i;
+        if (i != 0 || toSplit.charAt(ia) == '0') return i;
         throw new NumberFormatException("For input string " + toSplit + " @ [" + ia + ", " + ib$q + "] (effectively " + current() + ')');
     }
 
