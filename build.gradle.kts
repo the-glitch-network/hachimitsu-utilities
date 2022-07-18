@@ -13,6 +13,8 @@ java {
 	sourceCompatibility = JavaVersion.VERSION_11
 	targetCompatibility = JavaVersion.VERSION_11
 	modularity.inferModulePath.set(true)
+	withSourcesJar()
+	withJavadocJar()
 }
 
 repositories {
@@ -31,11 +33,5 @@ tasks {
 		options.encoding = "UTF-8"
 		options.isDeprecation = true
 		options.isWarnings = true
-	}
-
-	register<Jar>("sourcesJar") {
-		dependsOn("classes")
-		archiveClassifier.set("sources")
-		from(sourceSets.main.get())
 	}
 }
