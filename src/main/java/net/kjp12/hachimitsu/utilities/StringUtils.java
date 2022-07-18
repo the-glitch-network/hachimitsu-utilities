@@ -139,8 +139,7 @@ public final class StringUtils {
 			if (d < 0) break;
 			l = r;
 			r = r * radix + d;
-			int g = radix * (int) (r >> 57);
-			if (g >= 128 || r >= 0 && g >= 128 - Character.MAX_RADIX) {
+			if (r + Long.MIN_VALUE < l + Long.MIN_VALUE) {
 				return l;
 			}
 		}
