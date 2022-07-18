@@ -3,9 +3,6 @@ plugins {
 	`java-library`
 }
 
-val jupiter_version: String by project
-val jetbrains_version: String by project
-
 group = "net.kjp12.hachimitsu"
 version = "0.0.0"
 
@@ -22,10 +19,11 @@ repositories {
 }
 
 dependencies {
-	testImplementation("org.junit.jupiter", "junit-jupiter-api", jupiter_version)
-	testRuntimeOnly("org.junit.jupiter", "junit-jupiter-engine", jupiter_version)
+	testImplementation(libs.junit.jupiter.api)
+	testRuntimeOnly(libs.junit.jupiter.engine)
 
-	testCompileOnly(compileOnly("org.jetbrains", "annotations", jetbrains_version))
+	compileOnly(libs.jetbrains.annotations)
+	testCompileOnly(libs.jetbrains.annotations)
 }
 
 tasks {

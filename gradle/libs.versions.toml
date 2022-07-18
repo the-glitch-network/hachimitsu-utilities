@@ -1,0 +1,8 @@
+[versions]
+junit = "5.8.2"
+jetbrains = "23.0.0"
+
+[libraries]
+junit_jupiter_api = { module = "org.junit.jupiter:junit-jupiter-api", version.ref = "junit" }
+junit_jupiter_engine = { module = "org.junit.jupiter:junit-jupiter-engine", version.ref = "junit" }
+jetbrains_annotations = { module = "org.jetbrains:annotations", version.ref = "jetbrains" }
