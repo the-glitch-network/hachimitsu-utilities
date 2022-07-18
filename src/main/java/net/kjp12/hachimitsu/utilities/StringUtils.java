@@ -212,6 +212,10 @@ public final class StringUtils {
 		if (len != in.length()) len <<= 1;
 		int m = len - 1;
 		var out = new char[len];
+		// Quickly exit on 0-length
+		if (out.length == 0) {
+			return out;
+		}
 		out[0] = '\uFFFF';
 		for (int i = 0, il = in.length(); i < il; i++) {
 			var c = in.charAt(i);
