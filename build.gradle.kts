@@ -38,18 +38,4 @@ tasks {
 		archiveClassifier.set("sources")
 		from(sourceSets.main.get())
 	}
-
-	processResources {
-		inputs.property("version", project.version)
-
-		val srcDirs = sourceSets.main.get().resources.srcDirs
-		from(srcDirs) {
-			include("potato")
-			expand("version" to project.version)
-		}
-
-		from(srcDirs) {
-			exclude("potato")
-		}
-	}
 }
