@@ -7,104 +7,104 @@ import org.jetbrains.annotations.Contract;
  * @since 0.0.0
  */
 public interface IStringSpliterator {
-    static IStringSpliterator of(String[] arr) {
-        return new ArrayStringSpliterator(arr);
-    }
+	static IStringSpliterator of(String[] arr) {
+		return new ArrayStringSpliterator(arr);
+	}
 
-    static IStringSpliterator of(String str) {
-        return new StringSpliterator(str);
-    }
+	static IStringSpliterator of(String str) {
+		return new StringSpliterator(str);
+	}
 
-    static IStringSpliterator of(byte[] str) {
-        return new ByteStringSpliterator(str);
-    }
+	static IStringSpliterator of(byte[] str) {
+		return new ByteStringSpliterator(str);
+	}
 
-    @Contract(pure = true)
-    boolean contentEquals(String str);
+	@Contract(pure = true)
+	boolean contentEquals(String str);
 
-    @Contract(pure = true)
-    boolean contentEquals(String str, boolean ignoreCase);
+	@Contract(pure = true)
+	boolean contentEquals(String str, boolean ignoreCase);
 
-    @Contract(pure = true)
-    boolean startsWith(String str);
+	@Contract(pure = true)
+	boolean startsWith(String str);
 
-    @Contract(pure = true)
-    boolean startsWith(String str, boolean ignoreCase);
+	@Contract(pure = true)
+	boolean startsWith(String str, boolean ignoreCase);
 
-    @Contract(pure = true)
-    int currentLength();
+	@Contract(pure = true)
+	int currentLength();
 
-    @Contract(pure = true)
-    char charAt(int index);
+	@Contract(pure = true)
+	char charAt(int index);
 
-    @Contract(pure = true)
-    boolean isEmpty();
+	@Contract(pure = true)
+	boolean isEmpty();
 
-    void backtrack();
+	void backtrack();
 
-    boolean hasNext();
+	boolean hasNext();
 
-    void next();
+	void next();
 
-    default String nextString() {
-        next();
-        return current();
-    }
+	default String nextString() {
+		next();
+		return current();
+	}
 
-    default int nextHash() {
-        next();
-        return currentHash();
-    }
+	default int nextHash() {
+		next();
+		return currentHash();
+	}
 
-    default int nextHashScreamingSnake() {
-        next();
-        return currentHashScreamingSnake();
-    }
+	default int nextHashScreamingSnake() {
+		next();
+		return currentHashScreamingSnake();
+	}
 
-    default int nextInt() {
-        next();
-        return currentInt();
-    }
+	default int nextInt() {
+		next();
+		return currentInt();
+	}
 
-    default long nextLong() {
-        next();
-        return currentLong();
-    }
+	default long nextLong() {
+		next();
+		return currentLong();
+	}
 
-    default long nextDuration() {
-        next();
-        return currentDuration();
-    }
+	default long nextDuration() {
+		next();
+		return currentDuration();
+	}
 
-    @Contract(pure = true)
-    String current();
+	@Contract(pure = true)
+	String current();
 
-    @Contract(pure = true)
-    int currentHash();
+	@Contract(pure = true)
+	int currentHash();
 
-    @Contract(pure = true)
-    int currentHashScreamingSnake();
+	@Contract(pure = true)
+	int currentHashScreamingSnake();
 
-    @Contract(pure = true)
-    int currentInt();
+	@Contract(pure = true)
+	int currentInt();
 
-    @Contract(pure = true)
-    int currentInt(int def, int radix);
+	@Contract(pure = true)
+	int currentInt(int def, int radix);
 
-    @Contract(pure = true)
-    long currentLong();
+	@Contract(pure = true)
+	long currentLong();
 
-    @Contract(pure = true)
-    long currentLong(long def, int radix);
+	@Contract(pure = true)
+	long currentLong(long def, int radix);
 
-    @Contract(pure = true)
-    long currentDuration();
+	@Contract(pure = true)
+	long currentDuration();
 
-    @Contract(pure = true)
-    long tryParseLong(long def, int radix);
+	@Contract(pure = true)
+	long tryParseLong(long def, int radix);
 
-    @Contract(pure = true)
-    long tryParseUnsignedLong(long def, int radix);
+	@Contract(pure = true)
+	long tryParseUnsignedLong(long def, int radix);
 
-    String rest();
+	String rest();
 }

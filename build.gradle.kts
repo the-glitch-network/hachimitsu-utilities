@@ -1,6 +1,6 @@
 plugins {
-    java
-    `java-library`
+	java
+	`java-library`
 }
 
 val jupiter_version: String by project
@@ -10,46 +10,46 @@ group = "net.kjp12.hachimitsu"
 version = "0.0.0"
 
 java {
-    sourceCompatibility = JavaVersion.VERSION_11
-    targetCompatibility = JavaVersion.VERSION_11
-    modularity.inferModulePath.set(true)
+	sourceCompatibility = JavaVersion.VERSION_11
+	targetCompatibility = JavaVersion.VERSION_11
+	modularity.inferModulePath.set(true)
 }
 
 repositories {
-    mavenCentral()
+	mavenCentral()
 }
 
 dependencies {
-    testImplementation("org.junit.jupiter", "junit-jupiter-api", jupiter_version)
-    testRuntimeOnly("org.junit.jupiter", "junit-jupiter-engine", jupiter_version)
+	testImplementation("org.junit.jupiter", "junit-jupiter-api", jupiter_version)
+	testRuntimeOnly("org.junit.jupiter", "junit-jupiter-engine", jupiter_version)
 
-    testCompileOnly(compileOnly("org.jetbrains", "annotations", jetbrains_version))
+	testCompileOnly(compileOnly("org.jetbrains", "annotations", jetbrains_version))
 }
 
 tasks {
-    withType<JavaCompile> {
-        options.encoding = "UTF-8"
-        options.isDeprecation = true
-        options.isWarnings = true
-    }
+	withType<JavaCompile> {
+		options.encoding = "UTF-8"
+		options.isDeprecation = true
+		options.isWarnings = true
+	}
 
-    register<Jar>("sourcesJar") {
-        dependsOn("classes")
-        archiveClassifier.set("sources")
-        from(sourceSets.main.get())
-    }
+	register<Jar>("sourcesJar") {
+		dependsOn("classes")
+		archiveClassifier.set("sources")
+		from(sourceSets.main.get())
+	}
 
-    processResources {
-        inputs.property("version", project.version)
+	processResources {
+		inputs.property("version", project.version)
 
-        val srcDirs = sourceSets.main.get().resources.srcDirs
-        from(srcDirs) {
-            include("potato")
-            expand("version" to project.version)
-        }
+		val srcDirs = sourceSets.main.get().resources.srcDirs
+		from(srcDirs) {
+			include("potato")
+			expand("version" to project.version)
+		}
 
-        from(srcDirs) {
-            exclude("potato")
-        }
-    }
+		from(srcDirs) {
+			exclude("potato")
+		}
+	}
 }
